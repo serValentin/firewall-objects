@@ -7,6 +7,7 @@ if (whoami != "root") ; then
     exit 1
 fi
 
+source /opt/netbox/venv/bin/activate
 cd /home/valdah/firewall-objects
 pip install -e .
 
