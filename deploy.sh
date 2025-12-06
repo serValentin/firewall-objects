@@ -2,20 +2,52 @@
 
 set -e
 
+
+GROUP="netbox-share"
+USERS=("netbox" "valdah")
+HOME_DIR="/home/valdah"
+PLUGIN_DIR="$HOME_DIR/firewall-objects"
+
 if [ "$(id -u)" -ne 0 ]; then
     echo "You must be root to run this script."
     exit 1
 fi
 
-sudo groupadd netbox-share
-sudo usermod -aG netbox-share netbox
-sudo usermod -aG netbox-share valdah
+echo "Ensuring group '$GROUP' exists..."
+if ! getent group "$GROUP" >/dev/null; then
+  groupadd "$GROUP"
+fi
 
-sudo chgrp netbox-share /home/valdah
-sudo chmod 750 /home/valdah
-sudo chgrp -R netbox-share /home/valdah/firewall-objects
-sudo chmod -R 750 /home/valdah/firewall-objects
-sudo chmod g+s /home/valdah/firewall-objects
+echo "Ensuring users are members of '$GROUP'..."
+for u in "${USERS[@]}"; do
+  if id "$u" &>/dev/null; then
+    if ! id -nG "$u" | tr ' ' '\n' | grep -qx "$GROUP"; then
+      usermod -aG "$GROUP" "$u"
+      echo "  Added $u to $GROUP"
+    else
+      echo "  $u is already in $GROUP"
+    fi
+  else
+    echo "  Warning: user '$u' does not exist, skipping" >&2
+  fi
+done
+
+if [[ -d "$HOME_DIR" ]]; then
+  echo "Setting group and permissions on $HOME_DIR..."
+  chgrp "$GROUP" "$HOME_DIR"
+  chmod 750 "$HOME_DIR"
+else
+  echo "Warning: $HOME_DIR does not exist, skipping" >&2
+fi
+
+if [[ -d "$PLUGIN_DIR" ]]; then
+  echo "Setting group and permissions on $PLUGIN_DIR..."
+  chgrp -R "$GROUP" "$PLUGIN_DIR"
+  chmod -R 750 "$PLUGIN_DIR"
+  chmod g+s "$PLUGIN_DIR"
+else
+  echo "Warning: $PLUGIN_DIR does not exist, skipping" >&2
+fi
 
 source /opt/netbox/venv/bin/activate
 cd /home/valdah/firewall-objects
