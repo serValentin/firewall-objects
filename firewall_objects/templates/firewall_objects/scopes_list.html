@@ -1,0 +1,10 @@
+{# firewall_objects/templates/firewall_objects/scopes_list.html #}
+{% extends "generic/object_list.html" %}
+
+{{ block.super }}
+{% block extra_controls %}
+  <a href="{% url 'plugins:firewall_objects:scopetag_add' %}"
+     class="btn btn-primary">
+    Add Tag
+  </a>
+{% endblock %}

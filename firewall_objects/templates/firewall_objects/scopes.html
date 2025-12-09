@@ -1,0 +1,62 @@
+{# firewall_objects/templates/firewall_objects/scopes.html #}
+{% extends "generic/object.html" %}
+
+{% block title %}Scope: {{ object.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+
+  {# LEFT COLUMN – Scope details #}
+  <div class="col col-md-6">
+    <div class="card">
+      <h5 class="card-header">Scope</h5>
+      <div class="card-body">
+        <table class="table table-hover attr-table">
+          <tr><th>Name</th><td>{{ object.name }}</td></tr>
+          <tr><th>Slug</th><td>{{ object.slug }}</td></tr>
+          {% if object.description %}
+          <tr><th>Description</th><td>{{ object.description }}</td></tr>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {# RIGHT COLUMN – Scope tags #}
+  <div class="col col-md-6">
+    <div class="card">
+      <h5 class="card-header d-flex justify-content-between align-items-center">
+        <span>Scope Tags</span>
+        <a href="{% url 'plugins:firewall_objects:scopetag_add' %}?scope={{ object.pk }}"
+           class="btn btn-sm btn-primary">Add Tag</a>
+      </h5>
+      <div class="card-body">
+        {% with tags=object.scope_tags.all %}
+          {% if tags %}
+            <table class="table table-hover attr-table">
+              <thead>
+                <tr><th>Name</th><th class="text-middle">Slug</th><th class="text-end">Actions</th></tr>
+              </thead>
+              <tbody>
+                {% for tag in tags %}
+                <tr>
+                  <td>{{ tag.name }}</td>
+                  <td>{{ tag.slug }}</td>
+                  <td class="text-end">
+                    <a href="{% url 'plugins:firewall_objects:scopetag_delete' pk=tag.pk %}"
+                       class="btn btn-sm btn-danger">Delete</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p class="text-muted mb-0">No tags assigned yet.</p>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

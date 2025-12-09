@@ -1,27 +1,26 @@
-
 {% extends 'generic/object.html' %}
 {% load render_table from django_tables2 %}
 
 {% block content %}
-  <div class="row mb-3">
-    <div class="col col-md-6">
-      <div class="card">
+<div class="row">
+  <div class="col col-md-6">
+    {# existing panel with Name #}
+    {{ block.super }}
+  </div>
 
-        <h5 class="card-header">NetBox firewall-objects Plugin</h5>
-
-        <table class="table table-hover attr-table">
-          <tr>
-            <th scope="row">Name</th>
-            <td>{{ object.name }}</td>
-          </tr>
-        </table>
+  <div class="col col-md-6">
+    <div class="card">
+      <h5 class="card-header d-flex justify-content-between align-items-center">
+        Scope Tags
+        <a href="{% url 'plugins:firewall_objects:firewallobjectscopetag_add' %}?firewall_object={{ object.pk }}"
+           class="btn btn-sm btn-primary">
+          Add
+        </a>
+      </h5>
+      <div class="card-body table-responsive">
+        {% render_table assignments_table %}
       </div>
-      {% include 'inc/panels/custom_fields.html' %}
-    </div>
-    <div class="col col-md-6">
-      {% include 'inc/panels/tags.html' %}
-      {% include 'inc/panels/comments.html' %}
     </div>
   </div>
-{% endblock content %}
-
+</div>
+{% endblock %}

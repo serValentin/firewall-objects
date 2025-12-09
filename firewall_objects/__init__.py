@@ -15,5 +15,4 @@ class FirewallObjectsConfig(PluginConfig):
     version = "0.1.0"
     base_url = "firewall_objects"
 
-
 config = FirewallObjectsConfig
